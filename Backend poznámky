@@ -10,35 +10,25 @@ Architektura:
         v
     [ MySQL ]
 
+# php artisan serve
+
+| Aktivita                    | Popis                                                                                                                  | Stav / Výsledek | Poznámky                                                                                       |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------- |
+| Systematická dokumentace    | Vytvoření logické struktury dokumentace: účel, funkcionalita, UI/UX, backend, databáze, workflow, use cases, požadavky | Dokončeno       | Připraveno pro tým                                                                             |
+| Návrh file structure        | Navržena složková struktura Laravel backendu a frontend                                                                | Dokončeno       | Backend: Models, Controllers                                                                   |
+| Laravel instalace           | Instalace Laravel frameworku přes Composer                                                                             | Dokončeno       | vše staženo                                                                                    |
+| Tvorba třídy `WatchSession` | Implementace Eloquent modelu pro uchovávání videí a času                                                               | Dokončeno       | Obsahuje atributy user_name, service_name, start_time, end_time, duration_seconds              |
+| Tvorba `SessionController`  | Implementace metod `start()` a `end()` pro měření času videí                                                           | Dokončeno       | Backend počítá čas, frontend posílá jen start a end request                                    |
+| Nastavení `api.php`         | Definice REST endpointů pro start a end video session                                                                  | Dokončeno       | `/api/start` a `/api/end`                                                                      |
+| MySQL databáze              | Testování spojení                                                                                                      | Dokončeno       | Testování spojení s DB proběhlo úspěšně                                                        |
+
+
 🌐 API návrh
 Endpoint	Metoda	Popis
 /api/session/start	POST	zahájení sledování
 /api/session/end	POST	ukončení sledování
-/api/videos	GET	seznam videí
 /api/leaderboard	GET	statistiky
 frontend -> start timer -> backend vrati id -> frontend pak posle pri konci session id -> backend ulozi cas na backend a posle ho zpet na frontend
-
-app/
-├── Models/
-│   └── WatchSession.php
-│
-├── Http/
-│   └── Controllers/
-│       └── SessionController.php
-│
-routes/
-└── api.php
-
-
-DB architektura:
-
-watch_sessions
-- id
-- user_name
-- video_id
-- start_time
-- end_time
-- duration_seconds
 
 SELECT
     user_name,
@@ -48,4 +38,3 @@ GROUP BY user_name
 ORDER BY total_time DESC
 LIMIT 10;
 
-sessions bez end_time > 
