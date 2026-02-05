@@ -1,5 +1,16 @@
 Jasně – připravil jsem systematickou a přehlednou dokumentaci tvé aplikace podle předchozích popisů. Rozložil jsem ji do logických sekcí: účel, popis funkcionality, UI / UX, backend, databáze, workflow, statistiky, use cases a uživatelé. 
 Dokumentace aplikace – Web Overlay pro videa / speedrun motivaci
+
+struktura pro docs (např)
+docs/
+├── architecture.md
+├── api.md
+├── database.md
+├── frontend.md
+├── deployment.md
+└── user-guide.md
+
+
 1️⃣ Účel aplikace
 Cíl:
 Aplikace je určena pro studenty, kteří mají problém udržet pozornost při studiu nebo práci. Motivuje je pomocí minimálních plovoucích overlay videí (např. Subway Surfers, Minecraft speedrun) a sleduje, kolik času stráví jednotlivé uživatelské módy.
