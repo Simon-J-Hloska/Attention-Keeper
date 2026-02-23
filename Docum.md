@@ -1,4 +1,4 @@
-## Dokumentace aplikace – Webová aplikace pro smyčkové motivační video
+## Dokumentace aplikace - Webová aplikace pro smyčkové motivační video
 
 
 # Účel aplikace
