@@ -1,115 +1,146 @@
-## Dokumentace aplikace - Webová aplikace pro smyčkové motivační video
-
+# Dokumentace aplikace - Webová aplikace pro smyčkové motivační video
 
 # Účel aplikace
 
 ## Cíl
 
-Aplikace je určena pro studenty a uživatele, kteří potřebují udržet pozornost při studiu nebo práci. Poskytuje smyčkově přehrávaná videa a měří dobu jejich sledování. U každého videa je evidován rekord nejdelšího sledování.
+Aplikace je určena pro studenty a uživatele, kteří potřebují udržet pozornost při studiu nebo práci.  
+Poskytuje smyčkově přehrávaná videa a měří dobu jejich sledování.  
+U každého videa je evidován rekord nejdelšího sledování.
 
 ## Hlavní funkce
 
-* výběr videa z nabídky
-* přehrávání videa ve smyčce
-* měření času sledování
-* ukládání rekordů uživatelů
-* zobrazení leaderboardu u videí
-* jednoduché přihlášení jménem
+- výběr videa z nabídky
+- přehrávání videa ve smyčce
+- měření času sledování
+- ukládání rekordů uživatelů
+- zobrazení leaderboardu u videí
+- jednoduché přihlášení jménem
 
+# Architektura systému
+
+Aplikace je rozdělena na tři části:
+
+- Frontend - uživatelské rozhraní
+- Backend - REST API a logika
+- Server - nasazení
+
+Komunikace:
+
+Frontend <-> Backend <-> Databáze
 
 # Popis funkcionality
 
-| Funkce           | Popis                                |
-| ---------------- | ------------------------------------ |
-| Výběr videa      | Uživatel klikne na tlačítko s videem |
-| Přehrávání videa | Video se spustí a přehrává ve smyčce |
-| Měření času      | Backend měří dobu sledování          |
-| Uložení času     | Po ukončení sledování se čas uloží   |
-| Leaderboard      | U každého videa je zobrazen rekord   |
-| Přihlášení       | Uživatel zadá jméno                  |
-
+| Funkce | Popis |
+|--------|------|
+| Výběr videa | Uživatel klikne na tlačítko |
+| Přehrávání videa | Video běží ve smyčce |
+| Měření času | Backend měří sledování |
+| Uložení času | Po ukončení se uloží |
+| Leaderboard | Rekord u videa |
+| Přihlášení | Zadání jména |
 
 # UI / UX návrh
 
 ## Hlavní stránka
 
-* tlačítka s videi
-* u každého tlačítka:
+- tlačítka s videi
+- název videa
+- rekordní uživatel
+- rekordní čas
 
-  * název videa
-  * rekordní uživatel
-  * rekordní čas
+## Přehrávač
 
-## Přehrávač videa
+- video ve smyčce
+- aktuální čas
+- návrat do menu
 
-* video přehrávané ve smyčce
-* zobrazení aktuálního času sledování
-* tlačítko návratu do menu
-
-# Backend – Laravel
+# Backend - Laravel
 
 ## Funkce backendu
 
-* REST API pro:
-
-  * start sledování
-  * ukončení sledování
-  * získání videí
-  * získání leaderboardu
-* ukládání rekordů do databáze
+- start sledování
+- ukončení sledování
+- seznam videí
+- leaderboard
+- ukládání do DB
 
 ## Ukládaná data
 
-* uživatel
-* video
-* čas sledování
-* datum
+- uživatel
+- video
+- čas
+- datum
 
 ## Endpointy
 
-**POST /api/session/start**
-Zaznamená začátek sledování videa
-
-**POST /api/session/end**
-Zaznamená konec sledování a čas
-
-**GET /api/videos**
-Vrátí seznam videí
-
-**GET /api/leaderboard**
-Vrátí rekordy pro videa
+POST /api/session/start  
+POST /api/session/end  
+GET /api/videos  
+GET /api/leaderboard  
 
 # Workflow uživatele
 
-1. Uživatel otevře webovou aplikaci
-2. Zadá své jméno
+1. Otevře aplikaci
+2. Zadá jméno
 3. Vybere video
-4. Video se začne přehrávat
-5. Backend měří čas sledování
-6. Uživatel ukončí sledování
+4. Video se přehrává
+5. Backend měří čas
+6. Uživatel ukončí
 7. Čas se uloží
-8. Aktualizuje se leaderboard
+8. Leaderboard se aktualizuje
+
+# Postup vývoje
+
+## Sysadmin
+
+1. Založení účtu Hetzner
+2. Vytvoření VPS
+3. Výběr lokace a OS
+4. Spuštění serveru
+5. Update systému
+6. Nastavení root
+7. Instalace Nginx
+8. Test webu
+
+## Frontend
+
+1. Návrh struktury webu
+2. Vytvoření projektu
+3. UI implementace
+4. Napojení API
+5. Volání start/end
+6. Zobrazení leaderboardu
+
+## Backend
+
+1. Laravel projekt
+2. DB připojení
+3. Tabulka časů
+4. Ukládání dat
+5. API endpointy
+6. Test API
 
 # Požadavky
 
-## Funkční požadavky
+## Funkční
 
-| ID | Typ | Popis                   |
-| -- | --- | ----------------------- |
-| R1 | F   | Spustit video ve smyčce |
-| R2 | F   | Měřit čas sledování     |
-| R3 | F   | Uložit čas uživatele    |
-| R4 | F   | Zobrazit rekord u videa |
-| R5 | F   | Výběr videa             |
-| R6 | F   | Přihlášení jménem       |
+| ID | Popis |
+|----|------|
+| R1 | Smyčkové video |
+| R2 | Měření času |
+| R3 | Uložení času |
+| R4 | Leaderboard |
+| R5 | Výběr videa |
+| R6 | Přihlášení |
 
-## Nefunkční požadavky
+## Nefunkční
 
-| ID  | Typ | Popis                |
-| --- | --- | -------------------- |
-| R7  | Q   | Responsivní UI       |
-| R8  | Q   | Jednoduché ovládání  |
-| R9  | Q   | Přesnost měření +/-1 s |
-| R10 | Q   | Podpora více videí   |
-| R11 | Q   | Uložení dat v DB     |
-| R12 | Q   | Současní uživatelé   |
+| ID | Popis |
+|----|------|
+| R7 | Responsivní UI |
+| R8 | Jednoduché ovládání |
+| R9 | Přesnost ±1 s |
+| R10 | Více videí |
+| R11 | DB |
+| R12 | Více uživatelů |
