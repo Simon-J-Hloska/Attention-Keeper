@@ -25,3 +25,4 @@ Route::prefix('overlay')->group(function () {
     Route::post('/session/start', [SessionController::class, 'start']);
     Route::post('/session/end', [SessionController::class, 'end']);
     Route::post('/session/heartbeat', [SessionController::class, 'heartbeat']);
+    Route::get('/leaderboard', [SessionController::class, 'getLeaderboard']);

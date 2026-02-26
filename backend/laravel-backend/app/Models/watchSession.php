@@ -1,35 +1,23 @@
-<?php
-
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class WatchSession extends Model
 {
     use HasFactory;
 
-    protected $table = 'watch_sessions';
-
     protected $fillable = [
-        'user_name',
-        'service_name',
-        'start_time',
-        'end_time',
-        'duration_seconds',
+        'user_name', 
+        'service_name', 
+        'start_time', 
+        'end_time', 
+        'duration_seconds'
     ];
 
+    // Řekneme Laravelu, že tyto sloupce jsou datum a čas
     protected $casts = [
         'start_time' => 'datetime',
-        'end_time'   => 'datetime',
+        'end_time' => 'datetime',
     ];
-
-    protected $attributes = [
-        'duration_seconds' => 0,
-    ];
-
-    public function isActive(): bool
-    {
-        return $this->end_time === null;
-    }
 }

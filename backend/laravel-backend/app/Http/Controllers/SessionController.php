@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\WatchSession;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class SessionController extends Controller
 {
@@ -68,5 +69,37 @@ class SessionController extends Controller
 
         // can update last_seen if you want
         return response()->json(['status' => 'alive']);
+    }
+    /**
+     * GET: Načtení leaderboardu pro frontend.
+     * Vrátí nejlepšího studenta s nejdelším celkovým časem pro každé video/mod.
+     */
+    public function getLeaderboard()
+    {
+        // 1. Získáme součet časů pro každou službu a uživatele
+        $stats = DB::table('watch_sessions')
+            ->select('service_name', 'user_name', DB::raw('SUM(duration_seconds) as total_seconds'))
+            ->whereNotNull('end_time') // Bereme jen řádně ukončené sessions
+            ->groupBy('service_name', 'user_name')
+            ->orderBy('service_name')
+            ->orderByDesc('total_seconds') // Srovnáme od nejlepšího času
+            ->get();
+
+        // 2. Chceme ale vyfiltrovat jen toho "Top" uživatele pro každou službu
+        // Zkombinujeme to pomocí Laravel Kolekcí
+        $leaderboard = $stats->groupBy('service_name')->map(function ($group) {
+            // První záznam ve skupině je ten s nejvyšším časem (díky orderByDesc výše)
+            $topUser = $group->first(); 
+            
+            return [
+                'service_name' => $topUser->service_name,
+                'top_student_name' => $topUser->user_name,
+                'total_seconds' => (int) $topUser->total_seconds,
+                // Rovnou to naformátujeme do hezkého stringu 01:23:45 pro UI
+                'formatted_time' => gmdate("H:i:s", (int) $topUser->total_seconds) 
+            ];
+        })->values(); // Resetujeme indexy (aby to bylo čisté pole pro JSON)
+
+        return response()->json($leaderboard);
     }
 }
