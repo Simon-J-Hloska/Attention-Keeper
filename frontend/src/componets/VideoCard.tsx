@@ -1,4 +1,4 @@
-import VideoPlayer from "./VideoPlayer"
+import VideoPlayer from "./VideoPlayer.tsx"
 
 export default function VideoCard({ video }: any) {
   return (

@@ -1,12 +1,29 @@
-import {useState} from "react";
+import { useState } from "react";
+import {useApi} from "../api/useApi.ts";
+
 
 const LoginPage = () => {
+    const api = useApi();
     const [name, setName] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         if (!name) return;
-        localStorage.setItem("user_name", name);
-        window.location.href = "/videos";
+
+        setLoading(true);
+        setError("");
+
+        try {
+            await api.post("/user/login", { user_name: name });
+            localStorage.setItem("user_name", name);
+            window.location.href = "/videos";
+        } catch (err) {
+            console.error("Login failed:", err);
+            setError("Nepodařilo se přihlásit, zkuste to znovu.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -17,7 +34,12 @@ const LoginPage = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
             />
-            <button onClick={handleLogin}>Pokračovat</button>
+            {error && <p>{error}</p>}
+            <button onClick={handleLogin} disabled={loading}>
+                {loading ? "Probíhá přihlášení..." : "Pokračovat"}
+            </button>
         </div>
     );
 };
+
+export default LoginPage;

@@ -1,35 +1,28 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {Container, Tabs} from "@mantine/core";
+import TopUsersPage from "./pages/TopUsersPage.tsx";
+import VideosPage from "./pages/VideosPage.tsx";
+import LoginPage from "./pages/LoginPage.tsx";
+import {useState} from "react";
+
+
+
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [tab,setTab] = useState<string | null >("home");
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    return (
+       <Container w={"100%"} h={"100vh"} pt ="md" >
+           <Tabs value={tab} onChange={(value) => setTab(value)}>
+               <Tabs.List>
+                   <Tabs.Tab value="home">Top Uživatel</Tabs.Tab>
+                   <Tabs.Tab value="videos">Videa</Tabs.Tab>
+                   <Tabs.Tab value="login">Login</Tabs.Tab>
+               </Tabs.List>
+               <Tabs.Panel value="videos"><VideosPage/></Tabs.Panel>
+               <Tabs.Panel value="home"><TopUsersPage/></Tabs.Panel>
+               <Tabs.Panel value="login"><LoginPage/></Tabs.Panel>
+           </Tabs>
+       </Container>
+    );
 }
-
 export default App

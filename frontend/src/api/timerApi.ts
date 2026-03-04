@@ -1,25 +1,28 @@
-import axios from "axios";
+import { useApi } from "./useApi.ts";
 
-const API = "http://localhost:8000/api";
+// Custom hook to return timer and scoreboard functions
+export const useVideoApi = () => {
+    const api = useApi();
 
-export const startTimer = async (videoId: number) => {
-    const user = localStorage.getItem("user_name");
+    const startTimer = async (videoId: number) => {
+        const user = localStorage.getItem("user_name");
+        return api.post("/timer/start", {
+            user_name: user,
+            video_id: videoId,
+        });
+    };
 
-    return axios.post(`${API}/timer/start`, {
-        user_name: user,
-        video_id: videoId,
-    });
-};
+    const endTimer = async (videoId: number) => {
+        const user = localStorage.getItem("user_name");
+        return api.post("/timer/end", {
+            user_name: user,
+            video_id: videoId,
+        });
+    };
 
-export const endTimer = async (videoId: number) => {
-    const user = localStorage.getItem("user_name");
+    const getScoreboard = async (videoId: number) => {
+        return api.get(`/scoreboard/${videoId}`);
+    };
 
-    return axios.post(`${API}/timer/end`, {
-        user_name: user,
-        video_id: videoId,
-    });
-};
-
-export const getScoreboard = async (videoId: number) => {
-    return axios.get(`${API}/scoreboard/${videoId}`);
+    return { startTimer, endTimer, getScoreboard };
 };
