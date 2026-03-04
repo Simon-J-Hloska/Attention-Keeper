@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { Card } from "@mantine/core";
-import {useApi} from "../api/useApi.ts";
+import { useApi } from "../api/useApi";
 
 type Props = {
     src: string;
     title: string;
-    videoId: number; //
+    videoId: number;
+    autoPlay?: boolean;
 };
 
-export default function VideoPlayer({ src, title}: Props) {
+export default function VideoPlayer({ src, title, autoPlay = false }: Props) {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [sessionId, setSessionId] = useState<number | null>(null);
     // @ts-ignore
@@ -28,7 +29,7 @@ export default function VideoPlayer({ src, title}: Props) {
             });
 
             setSessionId(data.session_id);
-            
+
             heartbeatRef.current = setInterval(sendHeartbeat, 5000);
         } catch (err) {
             console.error("Failed to start session:", err);
@@ -66,17 +67,16 @@ export default function VideoPlayer({ src, title}: Props) {
         const video = videoRef.current;
         if (!video) return;
 
+        // Autoplay if requested
+        if (autoPlay) {
+            video.play().catch((err) => console.warn("Autoplay failed:", err));
+        }
+
         const handlePlay = () => {
             if (!sessionId) startSession();
         };
-
-        const handlePause = () => {
-            endSession();
-        };
-
-        const handleEnded = () => {
-            endSession();
-        };
+        const handlePause = () => endSession();
+        const handleEnded = () => endSession();
 
         video.addEventListener("play", handlePlay);
         video.addEventListener("pause", handlePause);
@@ -88,14 +88,17 @@ export default function VideoPlayer({ src, title}: Props) {
             video.removeEventListener("ended", handleEnded);
             endSession();
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sessionId]);
+    }, [sessionId, autoPlay]);
 
     return (
-        <Card className="max-w-xl mx-auto mt-6">
-            <h2 className="text-lg font-semibold mb-2">{title}</h2>
-
-            <video ref={videoRef} controls className="w-full rounded-lg">
+        <Card style={{ maxWidth: 600, margin: "0 auto", marginTop: 24, padding: 24 }}>
+            <h2 style={{ fontWeight: 600, fontSize: 18, marginBottom: 12 }}>{title}</h2>
+            <video
+                ref={videoRef}
+                controls
+                className="w-full"
+                autoPlay={autoPlay}
+            >
                 <source src={src} type="video/mp4" />
             </video>
         </Card>
