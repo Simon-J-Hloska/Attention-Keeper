@@ -6,9 +6,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use MongoDB\Laravel\Eloquent\Model; // Důležité: jiná cesta k Modelu
 
-class User extends Authenticatable
+class User extends Model
 {
+    use HasFactory, Notifiable;
+
+    protected $connection = 'mongodb';
+    protected $collection = 'users'; // V MongoDB se používají kolekce, ne tabulky
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
