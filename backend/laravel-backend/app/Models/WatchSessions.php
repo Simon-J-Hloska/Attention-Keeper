@@ -6,7 +6,6 @@ use MongoDB\Laravel\Eloquent\Model;
 class WatchSession extends Model
 {
     use HasFactory;
-
     protected $connection = 'mongodb';
     protected $collection = 'watch_sessions';
 

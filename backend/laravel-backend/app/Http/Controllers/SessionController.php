@@ -7,6 +7,7 @@ use App\Models\WatchSession;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
+
 class SessionController extends Controller
 {
     public function start(Request $request)
@@ -24,7 +25,7 @@ class SessionController extends Controller
             'start_time' => Carbon::now(),
         ]);
 
-        return response()->json([
+        return response()->json(data: [
             'session_id' => $session->id,
             'message' => 'Session started'
         ]);
@@ -64,7 +65,7 @@ class SessionController extends Controller
     public function heartbeat(Request $request)
     {
         $request->validate([
-            'session_id' => 'required|integer|exists:watch_sessions,id',
+            'session_id' => 'required|string',
         ]);
 
         // can update last_seen if you want
@@ -76,29 +77,36 @@ class SessionController extends Controller
      */
     public function getLeaderboard()
     {
-        // 1. Získáme součet časů pro každou službu a uživatele
-        $stats = DB::table('watch_sessions')
-            ->select('service_name', 'user_name', DB::raw('SUM(duration_seconds) as total_seconds'))
-            ->whereNotNull('end_time') // Bereme jen řádně ukončené sessions
-            ->groupBy('service_name', 'user_name')
-            ->orderBy('service_name')
-            ->orderByDesc('total_seconds') // Srovnáme od nejlepšího času
-            ->get();
+        // Get only finished sessions
+        $sessions = WatchSession::whereNotNull('end_time')->get();
 
-        // 2. Chceme ale vyfiltrovat jen toho "Top" uživatele pro každou službu
-        // Zkombinujeme to pomocí Laravel Kolekcí
-        $leaderboard = $stats->groupBy('service_name')->map(function ($group) {
-            // První záznam ve skupině je ten s nejvyšším časem (díky orderByDesc výše)
-            $topUser = $group->first(); 
-            
+        // Aggregate total time per user per service
+        $stats = $sessions->groupBy(function ($item) {
+            return $item->service_name . '|' . $item->user_name;
+        })->map(function ($group) {
+            $first = $group->first();
+
             return [
-                'service_name' => $topUser->service_name,
-                'top_student_name' => $topUser->user_name,
-                'total_seconds' => (int) $topUser->total_seconds,
-                // Rovnou to naformátujeme do hezkého stringu 01:23:45 pro UI
-                'formatted_time' => gmdate("H:i:s", (int) $topUser->total_seconds) 
+                'service_name' => $first->service_name,
+                'user_name' => $first->user_name,
+                'total_seconds' => $group->sum('duration_seconds')
             ];
-        })->values(); // Resetujeme indexy (aby to bylo čisté pole pro JSON)
+        });
+
+        // Get top user per service
+        $leaderboard = collect($stats)
+            ->groupBy('service_name')
+            ->map(function ($group) {
+                $top = $group->sortByDesc('total_seconds')->first();
+
+                return [
+                    'service_name' => $top['service_name'],
+                    'top_student_name' => $top['user_name'],
+                    'total_seconds' => (int) $top['total_seconds'],
+                    'formatted_time' => gmdate("H:i:s", (int) $top['total_seconds'])
+                ];
+            })
+            ->values();
 
         return response()->json($leaderboard);
     }
