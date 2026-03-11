@@ -1,8 +1,8 @@
 <?php
 
-namespace app\Http\Controllers;
+namespace App\Http\Controllers;
 
-use http\Client\Request;
+use Http\Client\Request;
 
 class UserController
 {
