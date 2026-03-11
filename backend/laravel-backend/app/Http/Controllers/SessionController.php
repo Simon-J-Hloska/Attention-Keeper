@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\WatchSession;
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class SessionController extends Controller
@@ -19,6 +19,8 @@ class SessionController extends Controller
             'user_name' => $request->user_name,
             'video_id' => $request->video_id,
             'start_time' => Carbon::now(),
+            'end_time' => null,
+            'duration_seconds' => 0
         ]);
 
         return response()->json([

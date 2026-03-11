@@ -8,10 +8,11 @@ class WatchSession extends Model
     use HasFactory;
     protected $connection = 'mongodb';
     protected $collection = 'watch_sessions';
+    public $timestamps = true;
 
     protected $fillable = [
         'user_name', 
-        'service_name', 
+        'video_id', 
         'start_time', 
         'end_time', 
         'duration_seconds'
