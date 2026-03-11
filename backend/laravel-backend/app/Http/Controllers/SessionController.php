@@ -5,52 +5,45 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\WatchSession;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-
 
 class SessionController extends Controller
 {
     public function start(Request $request)
     {
-        // validace vstupu
         $request->validate([
-            'user_name'  => 'required|string|max:50',
-            'service_name' => 'required|string|max:100',
+            'user_name' => 'required|string|max:50',
+            'video_id' => 'required|integer',
         ]);
 
-        // vytvoření nové session
         $session = WatchSession::create([
-            'user_name'  => $request->user_name,
-            'service_name' => $request->service_name,
+            'user_name' => $request->user_name,
+            'video_id' => $request->video_id,
             'start_time' => Carbon::now(),
         ]);
 
-        return response()->json(data: [
-            'session_id' => $session->id,
-            'message' => 'Session started'
+        return response()->json([
+            'message' => 'Session started',
+            'session_id' => $session->id
         ]);
     }
 
-    /**
-     * End video session.
-     * Frontend pošle session_id.
-     * Backend doplní end_time a spočítá duration.
-     */
     public function end(Request $request)
     {
-        // validace vstupu
         $request->validate([
-            'session_id' => 'required|integer|exists:watch_sessions,id',
+            'user_name' => 'required|string|max:50',
+            'video_id' => 'required|integer',
         ]);
 
-        $session = WatchSession::findOrFail($request->session_id);
+        $session = WatchSession::where('user_name', $request->user_name)
+            ->where('video_id', $request->video_id)
+            ->whereNull('end_time')
+            ->latest()
+            ->first();
 
-        // pokud už end_time existuje, nic nedělej
-        if ($session->end_time !== null) {
+        if (!$session) {
             return response()->json([
-                'message' => 'Session already ended',
-                'duration_seconds' => $session->duration_seconds
-            ]);
+                'message' => 'Session not found'
+            ], 404);
         }
 
         $session->end_time = Carbon::now();
@@ -62,45 +55,54 @@ class SessionController extends Controller
             'duration_seconds' => $session->duration_seconds
         ]);
     }
+
     public function heartbeat(Request $request)
     {
         $request->validate([
-            'session_id' => 'required|string',
+            'user_name' => 'required|string|max:50',
+            'video_id' => 'required|integer',
         ]);
 
-        // can update last_seen if you want
+        $session = WatchSession::where('user_name', $request->user_name)
+            ->where('video_id', $request->video_id)
+            ->whereNull('end_time')
+            ->latest()
+            ->first();
+
+        if (!$session) {
+            return response()->json(['status' => 'no active session']);
+        }
+
+        // Optional: update last activity timestamp
+        $session->touch();
+
         return response()->json(['status' => 'alive']);
     }
-    /**
-     * GET: Načtení leaderboardu pro frontend.
-     * Vrátí nejlepšího studenta s nejdelším celkovým časem pro každé video/mod.
-     */
+
     public function getLeaderboard()
     {
-        // Get only finished sessions
         $sessions = WatchSession::whereNotNull('end_time')->get();
 
-        // Aggregate total time per user per service
         $stats = $sessions->groupBy(function ($item) {
-            return $item->service_name . '|' . $item->user_name;
+            return $item->video_id . '|' . $item->user_name;
         })->map(function ($group) {
             $first = $group->first();
 
             return [
-                'service_name' => $first->service_name,
+                'video_id' => $first->video_id,
                 'user_name' => $first->user_name,
                 'total_seconds' => $group->sum('duration_seconds')
             ];
         });
 
-        // Get top user per service
         $leaderboard = collect($stats)
-            ->groupBy('service_name')
+            ->groupBy('video_id')
             ->map(function ($group) {
+
                 $top = $group->sortByDesc('total_seconds')->first();
 
                 return [
-                    'service_name' => $top['service_name'],
+                    'video_id' => $top['video_id'],
                     'top_student_name' => $top['user_name'],
                     'total_seconds' => (int) $top['total_seconds'],
                     'formatted_time' => gmdate("H:i:s", (int) $top['total_seconds'])
