@@ -1,0 +1,132 @@
+Below is a single MongoDB script you can copy and run. It:
+
+1. Switches to database Attention_DB
+
+
+2. Creates the watch_sessions collection
+
+
+3. Inserts an example document
+
+
+4. Includes example queries corresponding to your Laravel controller logic.
+
+
+
+// Use database
+use Attention_DB
+
+
+// Create collection
+db.createCollection("watch_sessions")
+
+
+// Example session start (equivalent to SessionController@start)
+db.watch_sessions.insertOne({
+  user_name: "John",
+  video_id: 1,
+  start_time: new Date(),
+  end_time: null,
+  duration_seconds: 0,
+  created_at: new Date(),
+  updated_at: new Date()
+})
+
+
+// Find active session (used by end() and heartbeat())
+db.watch_sessions.findOne(
+  {
+    user_name: "John",
+    video_id: 1,
+    end_time: null
+  },
+  {
+    sort: { start_time: -1 }
+  }
+)
+
+
+// End session example
+db.watch_sessions.updateOne(
+  {
+    user_name: "John",
+    video_id: 1,
+    end_time: null
+  },
+  {
+    $set: {
+      end_time: new Date(),
+      duration_seconds: 300,
+      updated_at: new Date()
+    }
+  }
+)
+
+
+// Heartbeat update (touch updated_at)
+db.watch_sessions.updateOne(
+  {
+    user_name: "John",
+    video_id: 1,
+    end_time: null
+  },
+  {
+    $set: {
+      updated_at: new Date()
+    }
+  }
+)
+
+
+// Leaderboard aggregation (sum watch time per user per video)
+db.watch_sessions.aggregate([
+  {
+    $match: {
+      end_time: { $ne: null }
+    }
+  },
+  {
+    $group: {
+      _id: {
+        video_id: "$video_id",
+        user_name: "$user_name"
+      },
+      total_seconds: {
+        $sum: "$duration_seconds"
+      }
+    }
+  }
+])
+
+
+// Leaderboard: top student per video
+db.watch_sessions.aggregate([
+  {
+    $match: {
+      end_time: { $ne: null }
+    }
+  },
+  {
+    $group: {
+      _id: {
+        video_id: "$video_id",
+        user_name: "$user_name"
+      },
+      total_seconds: {
+        $sum: "$duration_seconds"
+      }
+    }
+  },
+  {
+    $sort: {
+      total_seconds: -1
+    }
+  },
+  {
+    $group: {
+      _id: "$_id.video_id",
+      top_student_name: { $first: "$_id.user_name" },
+      total_seconds: { $first: "$total_seconds" }
+    }
+  }
+])
