@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Card } from "@mantine/core";
 import { useApi } from "../api/useApi";
 
@@ -7,19 +7,27 @@ type Props = {
     title: string;
     videoId: number;
     autoPlay?: boolean;
+    onPlay?: () => void;
+    onPause?: () => void;
 };
 
-export default function VideoPlayer({ src, title, autoPlay = false }: Props) {
+export default function VideoPlayer({
+                                        src,
+                                        title,
+                                        autoPlay = false,
+                                        onPlay,
+                                        onPause
+                                    }: Props) {
+
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [sessionId, setSessionId] = useState<number | null>(null);
-    // @ts-ignore
-    const heartbeatRef = useRef<NodeJS.Timeout | null>(null);
+    const heartbeatRef = useRef<any>(null);
 
     const api = useApi();
     const user = localStorage.getItem("user_name");
 
     const startSession = async () => {
-        if (!user) return;
+        if (!user || sessionId) return;
 
         try {
             const { data } = await api.post("/session/start", {
@@ -30,19 +38,12 @@ export default function VideoPlayer({ src, title, autoPlay = false }: Props) {
 
             setSessionId(data.session_id);
 
-            heartbeatRef.current = setInterval(sendHeartbeat, 5000);
+            heartbeatRef.current = setInterval(() => {
+                api.post("/session/heartbeat", { session_id: data.session_id });
+            }, 5000);
+
         } catch (err) {
             console.error("Failed to start session:", err);
-        }
-    };
-
-    const sendHeartbeat = async () => {
-        if (!sessionId) return;
-
-        try {
-            await api.post("/session/heartbeat", { session_id: sessionId });
-        } catch (err) {
-            console.error("Heartbeat failed:", err);
         }
     };
 
@@ -63,41 +64,43 @@ export default function VideoPlayer({ src, title, autoPlay = false }: Props) {
         setSessionId(null);
     };
 
-    useEffect(() => {
-        const video = videoRef.current;
-        if (!video) return;
+    const handlePlay = () => {
+        startSession();
+        onPlay?.();
+    };
 
-        // Autoplay if requested
-        if (autoPlay) {
-            video.play().catch((err) => console.warn("Autoplay failed:", err));
-        }
+    const handlePause = () => {
+        endSession();
+        onPause?.();
+    };
 
-        const handlePlay = () => {
-            if (!sessionId) startSession();
-        };
-        const handlePause = () => endSession();
-        const handleEnded = () => endSession();
-
-        video.addEventListener("play", handlePlay);
-        video.addEventListener("pause", handlePause);
-        video.addEventListener("ended", handleEnded);
-
-        return () => {
-            video.removeEventListener("play", handlePlay);
-            video.removeEventListener("pause", handlePause);
-            video.removeEventListener("ended", handleEnded);
-            endSession();
-        };
-    }, [sessionId, autoPlay]);
+    const handleEnded = () => {
+        endSession();
+        onPause?.();
+    };
 
     return (
-        <Card style={{ maxWidth: 600, margin: "0 auto", marginTop: 24, padding: 24 }}>
-            <h2 style={{ fontWeight: 600, fontSize: 18, marginBottom: 12 }}>{title}</h2>
+        <Card
+            style={{
+                width: "100%",
+                height: "100%",
+                margin: 0,
+                padding: 0,
+                background: "black"
+            }}
+        >
             <video
                 ref={videoRef}
                 controls
-                className="w-full"
                 autoPlay={autoPlay}
+                onPlay={handlePlay}
+                onPause={handlePause}
+                onEnded={handleEnded}
+                style={{
+                    width: "100%",
+                    height: "100vh",
+                    objectFit: "contain"
+                }}
             >
                 <source src={src} type="video/mp4" />
             </video>
