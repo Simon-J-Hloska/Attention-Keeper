@@ -1,0 +1,79 @@
+Use Case 1 - Přihlášení uživatele
+
+Aktér: Uživatel
+Popis: Uživatel zadá své jméno pro identifikaci v aplikaci.
+Předpodmínky: Uživatel není přihlášen.
+
+Hlavní scénář:
+
+Uživatel otevře aplikaci.
+
+Aplikace zobrazí pole pro zadání jména.
+
+Uživatel zadá jméno.
+
+Aplikace uloží jméno a přihlásí uživatele.
+
+Výsledek: Uživatel je přihlášen a může používat aplikaci.
+
+Use Case 2 - Výběr videa
+
+Aktér: Uživatel
+Popis: Uživatel vybere video, které chce sledovat.
+Předpodmínky: Uživatel je přihlášen.
+
+Hlavní scénář:
+
+Aplikace zobrazí seznam videí.
+
+Uživatel klikne na video.
+
+Aplikace otevře přehrávač.
+
+Výsledek: Video je připraveno ke sledování.
+
+Use Case 3 - Spuštění sledování
+
+Aktér: Uživatel
+Popis: Uživatel začne sledovat video a systém začne měřit čas.
+Předpodmínky: Video je otevřeno.
+
+Hlavní scénář:
+
+Video se začne přehrávat.
+
+Aplikace spustí časovač sledování.
+
+Uživatel sleduje video.
+
+Výsledek: Probíhá měření času sledování.
+
+Use Case 4 - Ukončení sledování
+
+Aktér: Uživatel
+Popis: Uživatel ukončí sledování videa.
+Předpodmínky: Probíhá sledování.
+
+Hlavní scénář:
+
+Uživatel zastaví video nebo odejde z přehrávače.
+
+Aplikace zastaví časovač.
+
+Aplikace uloží dosažený čas.
+
+Výsledek: Čas sledování je uložen.
+
+Use Case 5 - Zobrazení rekordů
+
+Aktér: Uživatel
+Popis: Uživatel vidí nejdelší dosažený čas u videa.
+Předpodmínky: Existují uložené záznamy.
+
+Hlavní scénář:
+
+Aplikace zobrazí rekord u videa.
+
+Zobrazí jméno uživatele a čas.
+
+Výsledek: Uživatel vidí leaderboard videa.
