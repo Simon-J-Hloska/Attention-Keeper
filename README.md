@@ -1,6 +1,6 @@
-# Webová aplikace - Smyčkové motivační video
+# Webová aplikace - Smyčkové video
 
-Webová aplikace pro přehrávání motivačních videí ve smyčce a měření doby sledování.  
+Webová aplikace pro přehrávání videí ve smyčce a měření doby sledování.  
 U každého videa je evidován rekord nejdelšího sledování uživatelem.
 
 ## Funkce
