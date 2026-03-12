@@ -12,7 +12,7 @@ class SessionController extends Controller
     {
         $request->validate([
             'user_name' => 'required|string|max:50',
-            'video_id' => 'required|integer',
+            'video_name' => 'required|integer',
         ]);
 
         $session = WatchSession::create([
@@ -20,6 +20,7 @@ class SessionController extends Controller
             'video_id' => $request->video_id,
             'start_time' => Carbon::now(),
             'end_time' => null,
+            'duration_seconds' => 0
             'duration_seconds' => 0
         ]);
 
@@ -33,7 +34,7 @@ class SessionController extends Controller
     {
         $request->validate([
             'user_name' => 'required|string|max:50',
-            'video_id' => 'required|integer',
+             'video_name' => 'required|integer',
         ]);
 
         $session = WatchSession::where('user_name', $request->user_name)
@@ -62,7 +63,7 @@ class SessionController extends Controller
     {
         $request->validate([
             'user_name' => 'required|string|max:50',
-            'video_id' => 'required|integer',
+            'video_name' => 'required|integer',
         ]);
 
         $session = WatchSession::where('user_name', $request->user_name)
