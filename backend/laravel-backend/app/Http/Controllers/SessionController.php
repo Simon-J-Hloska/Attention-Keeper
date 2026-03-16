@@ -12,7 +12,7 @@ class SessionController extends Controller
     {
         $request->validate([
             'user_name' => 'required|string|max:50',
-            'video_name' => 'required|integer',
+            'video_name' => 'required|string|max:255',
         ]);
 
         $session = WatchSession::create([
@@ -32,20 +32,13 @@ class SessionController extends Controller
     public function end(Request $request)
     {
         $request->validate([
-            'user_name' => 'required|string|max:50',
-             'video_name' => 'required|integer',
+            'session_id' => 'required|string',
         ]);
 
-        $session = WatchSession::where('user_name', $request->user_name)
-            ->where('video_name', $request->video_name)
-            ->whereNull('end_time')
-            ->latest()
-            ->first();
+        $session = WatchSession::find($request->session_id);
 
         if (!$session) {
-            return response()->json([
-                'message' => 'Session not found'
-            ], 404);
+            return response()->json(['status' => 'session not found'], 404);
         }
 
         $session->end_time = Carbon::now();
@@ -61,18 +54,13 @@ class SessionController extends Controller
     public function heartbeat(Request $request)
     {
         $request->validate([
-            'user_name' => 'required|string|max:50',
-            'video_name' => 'required|integer',
+            'session_id' => 'required|string',
         ]);
 
-        $session = WatchSession::where('user_name', $request->user_name)
-            ->where('video_name', $request->video_name)
-            ->whereNull('end_time')
-            ->latest()
-            ->first();
+        $session = WatchSession::find($request->session_id);
 
         if (!$session) {
-            return response()->json(['status' => 'no active session']);
+            return response()->json(['status' => 'session not found'], 404);
         }
 
         // Optional: update last activity timestamp
