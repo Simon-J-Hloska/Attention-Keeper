@@ -17,10 +17,9 @@ class SessionController extends Controller
 
         $session = WatchSession::create([
             'user_name' => $request->user_name,
-            'video_id' => $request->video_id,
+            'video_name' => $request->video_name,
             'start_time' => Carbon::now(),
             'end_time' => null,
-            'duration_seconds' => 0
             'duration_seconds' => 0
         ]);
 
@@ -38,7 +37,7 @@ class SessionController extends Controller
         ]);
 
         $session = WatchSession::where('user_name', $request->user_name)
-            ->where('video_id', $request->video_id)
+            ->where('video_name', $request->video_name)
             ->whereNull('end_time')
             ->latest()
             ->first();
@@ -67,7 +66,7 @@ class SessionController extends Controller
         ]);
 
         $session = WatchSession::where('user_name', $request->user_name)
-            ->where('video_id', $request->video_id)
+            ->where('video_name', $request->video_name)
             ->whereNull('end_time')
             ->latest()
             ->first();
@@ -87,25 +86,25 @@ class SessionController extends Controller
         $sessions = WatchSession::whereNotNull('end_time')->get();
 
         $stats = $sessions->groupBy(function ($item) {
-            return $item->video_id . '|' . $item->user_name;
+            return $item->video_name . '|' . $item->user_name;
         })->map(function ($group) {
             $first = $group->first();
 
             return [
-                'video_id' => $first->video_id,
+                'video_name' => $first->video_name,
                 'user_name' => $first->user_name,
                 'total_seconds' => $group->sum('duration_seconds')
             ];
         });
 
         $leaderboard = collect($stats)
-            ->groupBy('video_id')
+            ->groupBy('video_name')
             ->map(function ($group) {
 
                 $top = $group->sortByDesc('total_seconds')->first();
 
                 return [
-                    'video_id' => $top['video_id'],
+                    'video_name' => $top['video_name'],
                     'top_student_name' => $top['user_name'],
                     'total_seconds' => (int) $top['total_seconds'],
                     'formatted_time' => gmdate("H:i:s", (int) $top['total_seconds'])

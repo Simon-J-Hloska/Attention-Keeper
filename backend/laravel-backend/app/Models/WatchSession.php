@@ -14,7 +14,7 @@ class WatchSession extends Model
 
     protected $fillable = [
         'user_name', 
-        'video_id', 
+        'video_name', 
         'start_time', 
         'end_time', 
         'duration_seconds'
