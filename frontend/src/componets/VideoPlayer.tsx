@@ -1,6 +1,6 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Card } from "@mantine/core";
-import { useApi } from "../api/useApi";
+import {useVideoApi} from "../api/timerApi.ts";
 
 type Props = {
     src: string;
@@ -13,33 +13,24 @@ type Props = {
 
 export default function VideoPlayer({
                                         src,
-                                        title,
+
+                                        videoId,
                                         autoPlay = false,
                                         onPlay,
                                         onPause
                                     }: Props) {
 
     const videoRef = useRef<HTMLVideoElement | null>(null);
-    const [sessionId, setSessionId] = useState<number | null>(null);
     const heartbeatRef = useRef<any>(null);
 
-    const api = useApi();
-    const user = localStorage.getItem("user_name");
+    const { startTimer, endTimer, heartbeat } = useVideoApi();
 
     const startSession = async () => {
-        if (!user || sessionId) return;
-
         try {
-            const { data } = await api.post("/session/start", {
-                user_name: user,
-                service_name: "VideoPlatform",
-                video_name: title,
-            });
-
-            setSessionId(data.session_id);
+            await startTimer(videoId);
 
             heartbeatRef.current = setInterval(() => {
-                api.post("/session/heartbeat", { session_id: data.session_id });
+                heartbeat(videoId);
             }, 5000);
 
         } catch (err) {
@@ -48,20 +39,16 @@ export default function VideoPlayer({
     };
 
     const endSession = async () => {
-        if (!sessionId) return;
-
         if (heartbeatRef.current) {
             clearInterval(heartbeatRef.current);
             heartbeatRef.current = null;
         }
 
         try {
-            await api.post("/session/end", { session_id: sessionId });
+            await endTimer(videoId);
         } catch (err) {
             console.error("Failed to end session:", err);
         }
-
-        setSessionId(null);
     };
 
     const handlePlay = () => {

@@ -2,48 +2,51 @@ import { useEffect, useState } from "react";
 import { Card, Table, Skeleton, Stack, Text, Center } from "@mantine/core";
 import { useApi } from "../api/useApi";
 
-type TopUser = {
-    user_name: string;
-    total_time: number; // in seconds
+type LeaderboardItem = {
+    video_name: string;
+    top_student_name: string;
+    total_seconds: number;
+    formatted_time: string;
 };
 
 const TopUsersPage = () => {
-    const [users, setUsers] = useState<TopUser[]>([]);
+    const [items, setItems] = useState<LeaderboardItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
     const api = useApi();
 
     useEffect(() => {
-        const fetchTopUsers = async () => {
+        const fetchLeaderboard = async () => {
             setLoading(true);
             setError("");
 
             try {
-                const { data } = await api.get("/leaderboard/top5");
-                setUsers(data);
+                const { data } = await api.get("/leaderboard");
+                setItems(data);
             } catch (err) {
-                console.error("Failed to fetch top users:", err);
+                console.error("Failed to fetch leaderboard:", err);
                 setError("Nepodařilo se načíst data.");
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchTopUsers();
+        fetchLeaderboard();
     }, [api]);
 
     if (error)
         return (
             <Center style={{ minHeight: "70vh" }}>
-                <Text color="red">{error}</Text>
+                <Text c="red">{error}</Text>
             </Center>
         );
 
     return (
         <Center style={{ minHeight: "70vh" }}>
-            <Card style={{ width: 600, padding: 24 }}>
-                <Text  w={700} size="xl" mb="md">
-                    Top 5 uživatelů podle sledovaného času
+            <Card style={{ width: 700, padding: 24 }}>
+                <Text fw={700} size="xl" mb="md">
+                    Nejlepší studenti podle videí
                 </Text>
 
                 {loading ? (
@@ -57,17 +60,17 @@ const TopUsersPage = () => {
                     <Table striped highlightOnHover>
                         <thead>
                         <tr>
-                            <th>#</th>
-                            <th>Uživatel</th>
-                            <th>Celkový čas (min)</th>
+                            <th>Video</th>
+                            <th>Student</th>
+                            <th>Čas sledování</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {users.map((user, index) => (
-                            <tr key={user.user_name}>
-                                <td>{index + 1}</td>
-                                <td>{user.user_name}</td>
-                                <td>{Math.floor(user.total_time / 60)}</td>
+                        {items.map((item, index) => (
+                            <tr key={index}>
+                                <td>{item.video_name}</td>
+                                <td>{item.top_student_name}</td>
+                                <td>{item.formatted_time}</td>
                             </tr>
                         ))}
                         </tbody>

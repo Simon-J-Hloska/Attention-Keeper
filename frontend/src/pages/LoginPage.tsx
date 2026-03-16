@@ -1,23 +1,32 @@
-import { useState } from "react";
-import {useApi} from "../api/useApi.ts";
-
+import { useState, useEffect } from "react";
+import { useApi } from "../api/useApi.ts";
 
 const LoginPage = () => {
     const api = useApi();
+
     const [name, setName] = useState("");
+    const [storedUser, setStoredUser] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
+    useEffect(() => {
+        const existingUser = localStorage.getItem("user_name");
+        if (existingUser) {
+            setStoredUser(existingUser);
+        }
+    }, []);
+
     const handleLogin = async () => {
-        if (!name) return;
+        if (!name.trim()) return;
 
         setLoading(true);
         setError("");
 
         try {
             await api.post("/user/login", { user_name: name });
+
             localStorage.setItem("user_name", name);
-            window.location.href = "/videos";
+            setStoredUser(name);
         } catch (err) {
             console.error("Login failed:", err);
             setError("Nepodařilo se přihlásit, zkuste to znovu.");
@@ -29,15 +38,26 @@ const LoginPage = () => {
     return (
         <div>
             <h1>Přihlášení</h1>
-            <input
-                placeholder="Zadej jméno"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-            />
-            {error && <p>{error}</p>}
-            <button onClick={handleLogin} disabled={loading}>
-                {loading ? "Probíhá přihlášení..." : "Pokračovat"}
-            </button>
+
+            {storedUser ? (
+                <div>
+                    <p>Jste přihlášen jako: <strong>{storedUser}</strong></p>
+                </div>
+            ) : (
+                <>
+                    <input
+                        placeholder="Zadej jméno"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
+
+                    {error && <p style={{ color: "red" }}>{error}</p>}
+
+                    <button onClick={handleLogin} disabled={loading}>
+                        {loading ? "Probíhá přihlášení..." : "Pokračovat"}
+                    </button>
+                </>
+            )}
         </div>
     );
 };
