@@ -1,4 +1,4 @@
-# Webová aplikace - Smyčkové video
+# Webová aplikace - Attention keeper
 
 Webová aplikace pro přehrávání videí ve smyčce a měření doby sledování.  
 U každého videa je evidován rekord nejdelšího sledování uživatelem.
