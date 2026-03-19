@@ -67,7 +67,7 @@ Každé tlačítko obsahuje:
 - zobrazení aktuálního času sledování  
 - tlačítko návratu do menu  
 
-# Backend – Laravel
+# Backend - Laravel
 
 ## Architektura backendu
 
