@@ -1,11 +1,11 @@
-# Dokumentace aplikace - Webová aplikace pro smyčkové motivační video
+# Dokumentace aplikace - Webová aplikace pro smyčkové video
 
 # Účel aplikace
 
 ## Cíl
 
 Aplikace je určena pro studenty a uživatele, kteří potřebují udržet pozornost při studiu nebo práci.  
-Poskytuje smyčkově přehrávaná motivační videa a měří dobu jejich sledování.  
+Poskytuje smyčkově přehrávaná videa a měří dobu jejich sledování.  
 U každého videa je evidován uživatel s nejdelší dobou sledování.
 
 ## Hlavní funkce
