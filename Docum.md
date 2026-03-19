@@ -189,5 +189,5 @@ LIMIT 10;
 | R8 | Jednoduché a intuitivní ovládání |
 | R9 | Přesnost měření času +/-1 s |
 | R10 | Podpora více videí |
-| R11 | Ukládání dat v databázi MySQL |
+| R11 | Ukládání dat v databázi MongoDB |
 | R12 | Podpora více současných uživatelů |
