@@ -1,4 +1,4 @@
-Use Case 1 - Přihlášení uživatele
+UC-01 - Přihlášení uživatele
 
 Aktér: Uživatel
 Popis: Uživatel zadá své jméno pro identifikaci v aplikaci.
@@ -16,7 +16,7 @@ Aplikace uloží jméno a přihlásí uživatele.
 
 Výsledek: Uživatel je přihlášen a může používat aplikaci.
 
-Use Case 2 - Výběr videa
+UC-02 - Výběr videa
 
 Aktér: Uživatel
 Popis: Uživatel vybere video, které chce sledovat.
@@ -32,7 +32,7 @@ Aplikace otevře přehrávač.
 
 Výsledek: Video je připraveno ke sledování.
 
-Use Case 3 - Spuštění sledování
+UC-03 - Spuštění sledování
 
 Aktér: Uživatel
 Popis: Uživatel začne sledovat video a systém začne měřit čas.
@@ -48,7 +48,7 @@ Uživatel sleduje video.
 
 Výsledek: Probíhá měření času sledování.
 
-Use Case 4 - Ukončení sledování
+UC-04 - Ukončení sledování
 
 Aktér: Uživatel
 Popis: Uživatel ukončí sledování videa.
@@ -64,7 +64,7 @@ Aplikace uloží dosažený čas.
 
 Výsledek: Čas sledování je uložen.
 
-Use Case 5 - Zobrazení rekordů
+UC-05 - Zobrazení rekordů
 
 Aktér: Uživatel
 Popis: Uživatel vidí nejdelší dosažený čas u videa.
