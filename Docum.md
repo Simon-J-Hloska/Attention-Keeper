@@ -223,7 +223,7 @@ Pro každou technologii byla definována kritéria hodnocení a přiřazena váh
 
 ## Rozhodovací matice
 
-Hodnocení bylo provedeno na stupnici 1–5 (1 – velmi špatné, 5 – velmi dobré).  
+Hodnocení bylo provedeno na stupnici 1–5 (1 - velmi špatné, 5 - velmi dobré).  
 Celkové skóre technologie se počítá jako součet hodnot jednotlivých kritérií násobených jejich váhou.
 
 | Technologie / Kategorie      | Výkon (5) | Stabilita (4) | Komunita (3) | Zkušenost týmu (4) | Nasazení (3) | Celkové skóre |
