@@ -12,12 +12,12 @@ class SessionController extends Controller
     {
         $request->validate([
             'user_name' => 'required|string|max:50',
-            'video_name' => 'required|string|max:255',
+            'video_id' => 'required|string|max:255',
         ]);
 
         $session = WatchSession::create([
             'user_name' => $request->user_name,
-            'video_name' => $request->video_name,
+            'video_id' => $request->video_id,
             'start_time' => Carbon::now(),
             'end_time' => null,
             'duration_seconds' => 0
@@ -33,6 +33,7 @@ class SessionController extends Controller
     {
         $request->validate([
             'session_id' => 'required|string',
+            'video_id' => 'required|string|max:255',
         ]);
 
         $session = WatchSession::find($request->session_id);
@@ -55,6 +56,7 @@ class SessionController extends Controller
     {
         $request->validate([
             'session_id' => 'required|string',
+            'video_id' => 'required|string|max:255',
         ]);
 
         $session = WatchSession::find($request->session_id);
@@ -79,20 +81,20 @@ class SessionController extends Controller
             $first = $group->first();
 
             return [
-                'video_name' => $first->video_name,
+                'video_id' => $first->video_id,
                 'user_name' => $first->user_name,
                 'total_seconds' => $group->sum('duration_seconds')
             ];
         });
 
         $leaderboard = collect($stats)
-            ->groupBy('video_name')
+            ->groupBy('video_id')
             ->map(function ($group) {
 
                 $top = $group->sortByDesc('total_seconds')->first();
 
                 return [
-                    'video_name' => $top['video_name'],
+                    'video_id' => $top['video_id'],
                     'top_student_name' => $top['user_name'],
                     'total_seconds' => (int) $top['total_seconds'],
                     'formatted_time' => gmdate("H:i:s", (int) $top['total_seconds'])
