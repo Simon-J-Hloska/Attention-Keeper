@@ -6,27 +6,25 @@ export const useVideoApi = () => {
     const startTimer = async (videoId: number) => {
         const user = localStorage.getItem("user_name");
 
-        return api.post("/session/start", {
+        const res = await api.post("/session/start", {
             user_name: user,
-            video_id: videoId,
+            video_id: videoId.toString(),
         });
+
+        return res.data.session_id;
     };
 
-    const endTimer = async (videoId: number) => {
-        const user = localStorage.getItem("user_name");
-
+    const endTimer = async (sessionId: string, videoId: number) => {
         return api.post("/session/end", {
-            user_name: user,
-            video_id: videoId,
+            session_id: sessionId,
+            video_id: videoId.toString(),
         });
     };
 
-    const heartbeat = async (videoId: number) => {
-        const user = localStorage.getItem("user_name");
-
+    const heartbeat = async (sessionId: string, videoId: number) => {
         return api.post("/session/heartbeat", {
-            user_name: user,
-            video_id: videoId,
+            session_id: sessionId,
+            video_id: videoId.toString(),
         });
     };
 
