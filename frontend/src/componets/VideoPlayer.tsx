@@ -1,5 +1,5 @@
-import { useRef } from "react";
-import { Card } from "@mantine/core";
+import {useRef} from "react";
+import {Card} from "@mantine/core";
 import {useVideoApi} from "../api/timerApi.ts";
 
 type Props = {
@@ -13,7 +13,6 @@ type Props = {
 
 export default function VideoPlayer({
                                         src,
-
                                         videoId,
                                         autoPlay = false,
                                         onPlay,
@@ -22,15 +21,18 @@ export default function VideoPlayer({
 
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const heartbeatRef = useRef<any>(null);
+    const sessionIdRef = useRef<string | null>(null);
 
     const { startTimer, endTimer, heartbeat } = useVideoApi();
 
     const startSession = async () => {
         try {
-            await startTimer(videoId);
+            sessionIdRef.current = await startTimer(videoId);
 
             heartbeatRef.current = setInterval(() => {
-                heartbeat(videoId);
+                if (sessionIdRef.current) {
+                    heartbeat(sessionIdRef.current, videoId);
+                }
             }, 5000);
 
         } catch (err) {
@@ -45,7 +47,10 @@ export default function VideoPlayer({
         }
 
         try {
-            await endTimer(videoId);
+            if (sessionIdRef.current) {
+                await endTimer(sessionIdRef.current, videoId);
+                sessionIdRef.current = null;
+            }
         } catch (err) {
             console.error("Failed to end session:", err);
         }
